@@ -4,65 +4,57 @@ from result import Ok, Err, Result
 from pymongo import MongoClient
 import requests
 
-from mongo_utils import MongoCollection, get_mongo_scrape_db, upload_to_mongo
+from utils.mongo_utils import MongoCollection, get_mongo_scrape_db, upload_to_mongo
 
 HousePageInfo = namedtuple("House_Page_info", ["page_count", "page", "data"])
 
 
 def get_housing_data_at(page: int = 0) -> Result[HousePageInfo, str]:
     URL = os.environ.get("ENDPOINT")
-    LOCATIONS = '["se/liding\xf6_kommun"]' # os.environ.get("LOCATIONS")
+    LOCATIONS = '["se/liding\xf6_kommun"]'  # os.environ.get("LOCATIONS")
 
     if not URL or not LOCATIONS:
-        return Err(
-            "Envrionment variables not properly configured"
-        )
+        return Err("Envrionment variables not properly configured")
     offset = page * 50
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:96.0) Gecko/20100101 Firefox/96.0',
-        'Accept': '*/*',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Referer': 'https://qasa.se/',
-        'Origin': 'https://qasa.se',
-        'DNT': '1',
-        'Connection': 'keep-alive',
-        'Sec-Fetch-Dest': 'empty',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Site': 'same-site',
-        'Sec-GPC': '1',
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:96.0) Gecko/20100101 Firefox/96.0",
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Referer": "https://qasa.se/",
+        "Origin": "https://qasa.se",
+        "DNT": "1",
+        "Connection": "keep-alive",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-site",
+        "Sec-GPC": "1",
     }
 
     json_data = {
-        'operationName': 'HomeSearchQuery',
-        'variables': {
-            'limit': 50,
-            'platform': 'qasa',
-            'searchParams': {
-                'areaIdentifier': [
-                    'se/liding\xF6_kommun',
-                    'se/nacka_kommun',
-                    'se/solna_kommun',
-                    'se/stockholm',
-                    'se/sundbyberg'
+        "operationName": "HomeSearchQuery",
+        "variables": {
+            "limit": 50,
+            "platform": "qasa",
+            "searchParams": {
+                "areaIdentifier": [
+                    "se/liding\xF6_kommun",
+                    "se/nacka_kommun",
+                    "se/solna_kommun",
+                    "se/stockholm",
+                    "se/sundbyberg",
                 ],
             },
-            'offset': offset,
-            'order': 'DESCENDING',
-            'orderBy': 'PUBLISHED_AT',
+            "offset": offset,
+            "order": "DESCENDING",
+            "orderBy": "PUBLISHED_AT",
         },
-        'query': 'query HomeSearchQuery($offset: Int, $limit: Int, $platform: PlatformEnum!, $order: HomeSearchOrderEnum, $orderBy: HomeSearchOrderByEnum, $searchParams: HomeSearchParamsInput!) {\n  homeSearch(\n    platform: $platform\n    searchParams: $searchParams\n    order: $order\n    orderBy: $orderBy\n  ) {\n    filterHomesOffset(offset: $offset, limit: $limit) {\n      pagesCount\n      totalCount\n      hasNextPage\n      hasPreviousPage\n      nodes {\n        id\n        firsthand\n        rent\n        tenantBaseFee\n        title\n        landlord {\n          uid\n          companyName\n          premium\n          professional\n          profilePicture {\n            url\n            __typename\n          }\n          proPilot\n          __typename\n        }\n        location {\n          latitude\n          longitude\n          route\n          locality\n          sublocality\n          __typename\n        }\n        links {\n          locale\n          url\n          __typename\n        }\n        roomCount\n        seniorHome\n        shared\n        squareMeters\n        studentHome\n        type\n        duration {\n          createdAt\n          endOptimal\n          endUfn\n          id\n          startAsap\n          startOptimal\n          updatedAt\n          __typename\n        }\n        corporateHome\n        uploads {\n          id\n          url\n          type\n          title\n          metadata {\n            primary\n            order\n            __typename\n          }\n          __typename\n        }\n        numberOfHomes\n        minRent\n        maxRent\n        minRoomCount\n        maxRoomCount\n        minSquareMeters\n        maxSquareMeters\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n',
+        "query": "query HomeSearchQuery($offset: Int, $limit: Int, $platform: PlatformEnum!, $order: HomeSearchOrderEnum, $orderBy: HomeSearchOrderByEnum, $searchParams: HomeSearchParamsInput!) {\n  homeSearch(\n    platform: $platform\n    searchParams: $searchParams\n    order: $order\n    orderBy: $orderBy\n  ) {\n    filterHomesOffset(offset: $offset, limit: $limit) {\n      pagesCount\n      totalCount\n      hasNextPage\n      hasPreviousPage\n      nodes {\n        id\n        firsthand\n        rent\n        tenantBaseFee\n        title\n        landlord {\n          uid\n          companyName\n          premium\n          professional\n          profilePicture {\n            url\n            __typename\n          }\n          proPilot\n          __typename\n        }\n        location {\n          latitude\n          longitude\n          route\n          locality\n          sublocality\n          __typename\n        }\n        links {\n          locale\n          url\n          __typename\n        }\n        roomCount\n        seniorHome\n        shared\n        squareMeters\n        studentHome\n        type\n        duration {\n          createdAt\n          endOptimal\n          endUfn\n          id\n          startAsap\n          startOptimal\n          updatedAt\n          __typename\n        }\n        corporateHome\n        uploads {\n          id\n          url\n          type\n          title\n          metadata {\n            primary\n            order\n            __typename\n          }\n          __typename\n        }\n        numberOfHomes\n        minRent\n        maxRent\n        minRoomCount\n        maxRoomCount\n        minSquareMeters\n        maxSquareMeters\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n",
     }
 
-    response = requests.post('https://api.qasa.se/graphql', headers=headers, json=json_data)
-    
-    # data=data.replace("**offset**", offset)
-    # data=data.replace("**area**", LOCATIONS)
+    response = requests.post(URL, headers=headers, json=json_data)
 
-    # response = requests.post(
-    #     URL, headers=headers, data=data
-    # )
     raw = response.json()
     match raw:
         case {
@@ -124,9 +116,10 @@ def get_dupplicates(data, collection):
     return [item["id"] for item in duplicates]
 
 
-
-
 def scrape_locations():
+    URL = os.environ.get("ENDPOINT")
+    if not URL:
+        return Err("Envrionment variables not properly configured")
     headers = {
         "Connection": "keep-alive",
         "accept": "*/*",
@@ -144,8 +137,8 @@ def scrape_locations():
 
     data = '{"operationName":"HomeSearchCoordsQuery","variables":{"filterOnArea":false,"platform":"qasa","searchParams":{"areaIdentifier":["se/stockholm"]}},"query":"query HomeSearchCoordsQuery($platform: PlatformEnum!, $searchParams: HomeSearchParamsInput, $filterOnArea: Boolean) {\\n  homeSearchCoords(\\n    platform: $platform\\n    searchParams: $searchParams\\n    filterOnArea: $filterOnArea\\n  ) {\\n    filterHomesRaw\\n    __typename\\n  }\\n}\\n"}'
 
-    response = requests.post("https://api.qasa.se/graphql", headers=headers, data=data)
-
+    response = requests.post(URL, headers=headers, data=data)
+    return Ok(response)
 
 if __name__ == "__main__":
     match scrape(False):

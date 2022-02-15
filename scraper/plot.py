@@ -1,7 +1,7 @@
 from typing import List
 import pandas as pd
 
-from utils import LocationInfo
+from utils.helper import LocationInfo
 import plotly.express as px
 
 

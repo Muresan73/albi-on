@@ -21,5 +21,3 @@ class Distance:
 split_array = lambda array,n:[array[i:i + n] for i in range(0, len(array), n)]
 
 extract_location = lambda o:Location(o.lat,o.lon)
-
-# namedtuple("Fszom",["origin", "target", "distance"])

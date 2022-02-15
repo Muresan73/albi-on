@@ -3,11 +3,10 @@ from unittest.mock import Mock
 from urllib import response
 import pytest
 import requests
-import mongo_utils
 
-from fill_geo_data import upload_distances_to_T_C
-from mongo_utils import MongoCollection
-from utils import Location
+from scraper.fill_geo_data import upload_distances_to_T_C
+from utils import mongo_utils
+from utils.helper import Location
 
 
 @pytest.fixture(autouse=True)
@@ -45,21 +44,21 @@ def test_google_distance_data_upload(monkeypatch):
             upload_distances_to_T_C()
 
             collection, origin, target, distance, size = first_values_sample[0]
-            assert collection == MongoCollection.PublicDistance
+            assert collection == mongo_utils.MongoCollection.PublicDistance
             assert origin == Location(lat=59.3356075465, lon=18.0353782334)
             assert target ==  Location(lat=59.330767, lon=18.0591)
             assert distance ==  480
             assert size == 10
             
             collection, origin, target, distance, size = first_values_sample[1]
-            assert collection == MongoCollection.PublicDistance
+            assert collection == mongo_utils.MongoCollection.PublicDistance
             # assert origin == Location(lat=59.3545363, lon=17.8831046)
             # assert target ==  Location(lat=59.330767, lon=18.0591)
             assert distance ==  480
             assert size == 10
 
             collection, origin, target, distance, size = first_values_sample[2]
-            assert collection == MongoCollection.PublicDistance
+            assert collection == mongo_utils.MongoCollection.PublicDistance
             # assert origin == Location(lat=59.3627004, lon=17.8390893)
             # assert target ==  Location(lat=59.330767, lon=18.0591)
             assert distance ==  480
@@ -83,17 +82,4 @@ def test_error_on_response(monkeypatch):
                 upload_distances_to_T_C()
                 assert e == Exception("Number of locations and response size mismatch") 
 
-def test_upload(monkeypatch):
-    with open("test_data/db_info.json") as dbfile:
-        dictlist = json.load(dbfile)
-        info = [mongo_utils.DBInfo(**dictionary) for dictionary in  dictlist ]
-        
-        with open("test_data/response-gmaps-distance.json") as file:
-            raw = json.load(file)
-            raw['rows'] = raw['rows'][:10]
-            monkeypatch.setattr(requests, "request", lambda *_,**__:MockResponse(raw))
-            monkeypatch.setattr(mongo_utils, "db_info", lambda:info)
-            # monkeypatch.delattr(mongo_utils, "upload_to_mongo")
-
-            upload_distances_to_T_C()
 

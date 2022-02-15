@@ -4,7 +4,8 @@ import os
 from typing import Dict, List, Tuple, Union, cast
 import pymongo
 from dataclasses import asdict
-from utils import LocationInfo, LocationWithId
+from . import helper
+from pandas import json_normalize
 
 USER = os.environ.get("MONGO_USER")
 PASSWORD = os.environ.get("PSWD")
@@ -30,14 +31,14 @@ def upload_to_mongo(data, collection):
     db.insert_many(data)
 
 
-def db_info() -> List[Union[LocationInfo, LocationWithId]]:
+def db_info() -> List[Union[helper.LocationInfo, helper.LocationWithId]]:
     client = get_mongo_scrape_db()
     database = client[MongoCollection.HomeSearch]
     response = database.find(
         {}, {"location": {"latitude": 1, "longitude": 1}, "rent": 1}
     )
     return cast(
-        List[Union[LocationInfo, LocationWithId]],
+        List[Union[helper.LocationInfo, helper.LocationWithId]],
         [
             DBInfo(
                 item["location"]["latitude"],
@@ -57,6 +58,5 @@ def db_distance_info():
 
 def db_distance_info_sanitized():
     sanitized = db_distance_info()
-    from pandas.io.json import json_normalize
     json_normalize(sanitized)
     return json_normalize(sanitized)
