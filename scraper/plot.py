@@ -20,13 +20,14 @@ def price_data(data: List[LocationInfo]):
         color_continuous_scale=["gold","orangered" ,"#550055"],
         center={'lat':59.31, 'lon':18.06},
         zoom=11,
+        height=1000
     )
     return fig.show()
 
 def distance_region(data):
-    lat = [item['origin']["lat"] for item in data]
-    lon = [item['origin']["lon"] for item in data]
-    distance_time = [round(item['distance_time']/60,ndigits=1) for item in data]
+    lat = [item[1] for item in data]
+    lon = [item[0] for item in data]
+    distance_time = [round(item[2]/60,ndigits=1) for item in data]
     fig = px.scatter_mapbox(
         title = 'Public Transport From T-Centralen',
         lat=lat,
@@ -39,5 +40,6 @@ def distance_region(data):
         labels={ 'color':'time'},
         center={'lat':59.31, 'lon':18.06},
         zoom=11,
+        height=1000
     )
     return fig.show()

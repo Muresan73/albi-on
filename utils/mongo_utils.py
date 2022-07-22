@@ -3,7 +3,7 @@ from enum import Enum
 import os
 from typing import Dict, List, Tuple, Union, cast
 import pymongo
-from dataclasses import asdict
+from dataclasses import asdict, is_dataclass
 from . import helper
 from pandas import json_normalize
 
@@ -27,7 +27,8 @@ class MongoCollection(str, Enum):
 def upload_to_mongo(data, collection):
     client = get_mongo_scrape_db()
     db = client[collection]
-    data = [asdict(a) for a in data]
+    if is_dataclass(data):
+        data = [asdict(a) for a in data]
     db.insert_many(data)
 
 
