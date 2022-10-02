@@ -1,7 +1,6 @@
 from collections import namedtuple
 import os
 from result import Ok, Err, Result
-from pymongo import MongoClient
 import requests
 
 from utils.mongo_utils import MongoCollection, get_mongo_scrape_db, upload_to_mongo
@@ -11,7 +10,7 @@ HousePageInfo = namedtuple("House_Page_info", ["page_count", "page", "data"])
 
 def get_housing_data_at(page: int = 0) -> Result[HousePageInfo, str]:
     URL = os.environ.get("ENDPOINT")
-    LOCATIONS = '["se/liding\xf6_kommun"]'  # os.environ.get("LOCATIONS")
+    LOCATIONS = os.environ.get("LOCATIONS") #'["se/liding\xf6_kommun"]' 
 
     if not URL or not LOCATIONS:
         return Err("Envrionment variables not properly configured")
