@@ -3,7 +3,6 @@ import torch.utils.data as Data
 from utils.mongo_utils import db_distance_info_sanitized
 from tqdm import tqdm
 import torch.nn as nn
-import torch.nn.functional as F
 import haversine as hs
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter()
@@ -97,6 +96,12 @@ writer.flush()
 writer.close()
 
 import numpy as np
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF
+
+kernel = 1 * RBF(length_scale=1.0, length_scale_bounds=(1e-2, 1e2))
+gaussian_process = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=9)
+gaussian_process.fit(X_train, y_train)
 
 lon = np.linspace(17.8,18.2,20)
 lat = np.linspace(59.4,59.2,20)

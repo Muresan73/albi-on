@@ -25,8 +25,8 @@ def price_data(data: List[LocationInfo]):
     return fig.show()
 
 def distance_region(data):
-    lat = [item[1] for item in data]
-    lon = [item[0] for item in data]
+    lat = [item[0] for item in data]
+    lon = [item[1] for item in data]
     distance_time = [round(item[2]/60,ndigits=1) for item in data]
     fig = px.scatter_mapbox(
         title = 'Public Transport From T-Centralen',
@@ -42,4 +42,4 @@ def distance_region(data):
         zoom=11,
         height=1000
     )
-    return fig.show()
+    return fig

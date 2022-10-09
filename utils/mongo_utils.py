@@ -1,10 +1,10 @@
 from collections import namedtuple
 from enum import Enum
 import os
-from typing import Dict, List, Tuple, Union, cast
+from typing import List, Union, cast
 import pymongo
 from dataclasses import asdict, is_dataclass
-from . import helper
+from utils import helper
 from pandas import json_normalize
 
 USER = os.environ.get("MONGO_USER")
